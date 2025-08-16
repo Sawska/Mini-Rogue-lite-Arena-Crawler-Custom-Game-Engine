@@ -176,3 +176,52 @@ void Game::nextLevel() {
     ++levelIndex;
     levelManager.buildLevel(levelIndex, manager, dungeon, *player);
 }
+
+#include "Renderer2D.h"
+
+Renderer2D renderer; // add to Game.h
+
+void Game::run() {
+    if (!renderer.init()) {
+        std::cerr << "Failed to initialize renderer\n";
+        return;
+    }
+
+    player = &Player::create(manager);
+    SaveMeta meta{0, levelManager.getSeed()};
+    SaveSystem::load("save.json", *player, meta);
+    levelIndex = meta.levelIndex;
+    levelManager.buildLevel(levelIndex, manager, dungeon, *player);
+
+    while (!renderer.shouldClose()) {
+        tick(loopTime++); // simulate logic
+        render();         // draw entities
+        renderer.poll();  // input events
+    }
+
+    SaveSystem::save("save.json", *player, SaveMeta{levelIndex, levelManager.getSeed()});
+    renderer.terminate();
+}
+
+void Game::render() {
+
+    renderer.beginFrame();
+
+ImGui::Begin("Game Stats");
+ImGui::Text("Level: %d", levelIndex);
+ImGui::Text("Player HP: %d", player->getComponent<HealthComponent>()->currentHealth);
+ImGui::End();
+
+renderer.endFrame();
+    renderer.clear();
+
+    for (auto& e : manager.getEntities()) {
+        auto pos = e->getComponent<PositionComponent>();
+        if (pos)
+            renderer.drawRect(pos->x * 10, pos->y * 10, 10, 10); // simple block for each
+    }
+
+    renderer.present();
+
+}
+
