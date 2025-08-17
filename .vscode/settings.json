@@ -49,6 +49,8 @@
         "sstream": "cpp",
         "string_view": "cpp",
         "variant": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "deque": "cpp",
+        "hash_map": "cpp"
     }
 }

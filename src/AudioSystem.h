@@ -12,7 +12,7 @@ public:
     }
 
     void update() {
-        // Remove finished sounds
+        
         sounds.erase(std::remove_if(sounds.begin(), sounds.end(),
             [](const sf::Sound& s) { return s.getStatus() == sf::Sound::Stopped; }),
             sounds.end());
